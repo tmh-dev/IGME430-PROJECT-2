@@ -1,7 +1,7 @@
-import React from 'react';
-import { Route, RouteHandler, Link } from 'react-router-dom';
+import * as React from 'react';
+import { Route, Link } from 'react-router-dom';
 
-const Navbar = props => {
+const Navbar = () => {
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <a className="navbar-brand" href="#">Talaria</a>

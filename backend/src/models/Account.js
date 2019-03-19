@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
-
+const crypto = require('crypto');
 const { Schema } = mongoose;
+mongoose.Promise = global.Promise;
 
 let AccountModel = {};
 const iterations = 10000;
@@ -45,9 +46,9 @@ const validatePassword = (doc, password, callback) => {
   });
 };
 
-AccountSchema.statics.findByUsername = (name, callback) => {
+AccountSchema.statics.findByEmail = (email, callback) => {
   const search = {
-    username: name,
+    email,
   };
 
   return AccountModel.findOne(search, callback);
@@ -59,7 +60,7 @@ AccountSchema.statics.generateHash = (password, callback) => {
   crypto.pbkdf2(password, salt, iterations, keyLength, 'RSA-SHA512', (err, hash) => callback(salt, hash.toString('hex')));
 };
 
-AccountSchema.statics.authenticate = (username, password, callback) => AccountModel.findByUsername(username, (err, doc) => {
+AccountSchema.statics.authenticate = (email, password, callback) => AccountModel.findByEmail(email, (err, doc) => {
   if (err) {
     return callback(err);
   }

@@ -1,6 +1,6 @@
-import React from 'react';
+import * as React from 'react';
 
-const Home = props => {
+const Home = () => {
     return (
         <div className="container">
             Home page
