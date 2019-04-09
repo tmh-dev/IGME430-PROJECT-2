@@ -46,6 +46,15 @@ StorySchema.statics.findByOwner = (ownerId, callback) => {
   return StoryModel.find(query).select('title description').exec(callback);
 };
 
+StorySchema.statics.deleteByTitle = (ownerId, title, callback) => {
+  const query = {
+    owner: convertId(ownerId),
+    title,
+  };
+
+  return StoryModel.deleteOne(query, callback);
+}
+
 StoryModel = mongoose.model('Story', StorySchema);
 
 module.exports = {

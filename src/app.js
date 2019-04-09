@@ -9,7 +9,7 @@ const compression = require('compression');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
-// const csrf = require('csurf');
+const csrf = require('csurf');
 
 // import required files
 const router = require('./router');
@@ -62,21 +62,21 @@ app.use(session({
   },
 }));
 app.use(cookieParser());
-// app.use(csrf());
-// app.use((err, req, res, next) => {
-//   if (err.code !== 'EBADCSRFTOKEN') return next(err);
+app.use(csrf());
+app.use((err, req, res, next) => {
+  if (err.code !== 'EBADCSRFTOKEN') return next(err);
 
-//   console.log('Missing CSRF Token');
-//   return false;
-// });
+  console.log('Missing CSRF Token');
+  return false;
+});
 
+// route server requests through helper js file
+router(app);
+app.use('/api', router);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(`${__dirname}/../client/dist/index.html`));
 });
-// route server requests through helper js file
-router(app);
-app.use('/api', router);
 
 // start sever
 app.listen(PORT, (err) => {

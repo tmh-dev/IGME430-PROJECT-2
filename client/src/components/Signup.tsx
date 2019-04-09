@@ -1,16 +1,15 @@
 import * as React from 'react';
 import axios from 'axios';
-import { stringify, parse } from 'query-string';
+import { stringify } from 'query-string';
 
 export interface IProps {
-    getToken: any;
+    _csrf: string;
 }
 
 export interface IState {
     email: string;
     password1: string;
     password2: string;
-    _csrf: string;
 }
 
 export default class Signup extends React.Component<IProps, IState> {
@@ -18,29 +17,9 @@ export default class Signup extends React.Component<IProps, IState> {
         email: '',
         password1: '',
         password2: '',
-        _csrf: '',
     };
 
-    componentDidMount() {
-        this.getToken();
-    }
-
-    private getToken = async (): Promise<any> => {
-        try {
-            const response = await axios({
-                method: 'get',
-                url: '/api/getToken',
-                responseType: 'text'
-            });
-
-            
-            console.log(response);
-        } catch (err) {
-            console.log(err);
-        }
-    }
-
-    private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         switch (e.target.getAttribute('id')) {
             case 'inputEmail':
                 this.setState({ email: e.target.value });
@@ -58,7 +37,7 @@ export default class Signup extends React.Component<IProps, IState> {
         e.preventDefault();
 
         const { email, password1, password2 } = this.state;
-        console.log(email);
+        const { _csrf } = this.props;
     
         if (!email || !password1 || !password2) {
             console.log(`All fields required.`);
@@ -72,6 +51,7 @@ export default class Signup extends React.Component<IProps, IState> {
             email,
             pass1: password1,
             pass2: password2,
+            _csrf
         };
  
         try {
@@ -89,7 +69,8 @@ export default class Signup extends React.Component<IProps, IState> {
     }
 
     public render() {
-        const { email, password1, password2, _csrf } = this.state;
+        const { _csrf } = this.props;
+        const { email, password1, password2 } = this.state;
 
         return (
             <div className="container">
@@ -98,18 +79,18 @@ export default class Signup extends React.Component<IProps, IState> {
                     <div className="form-group">
                         <label htmlFor="inputEmail">Email address</label>
                         <input type="email" className="form-control" id="inputEmail" aria-describedby="emailHelp" 
-                        placeholder="Enter email" onChange={this.handleOnChange} value={ email }/>
+                        placeholder="Enter email" onChange={ this.handleOnChange } value={ email }/>
                         <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>             
                     </div>
                     <div className="form-group">
                         <label htmlFor="inputPassword1">Password</label>
                         <input type="password" className="form-control" id="inputPassword1" placeholder="Password" 
-                        onChange={this.handleOnChange} value={ password1 } />
+                        onChange={ this.handleOnChange } value={ password1 } />
                     </div>
                     <div className="form-group">
                         <label htmlFor="inputPassword2">Confirm Password</label>
                         <input type="password" className="form-control" id="inputPassword2" placeholder="Confirm Password" 
-                        onChange={this.handleOnChange} value={ password2 } />
+                        onChange={ this.handleOnChange } value={ password2 } />
                     </div>
                     <input type="hidden" name="_csrf" value={ _csrf } />
                     <button type="submit" className="btn btn-primary">Submit</button>

@@ -2,25 +2,25 @@ import * as React from 'react';
 import { Route, BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
 // import components
-import Home from './Home';
+import { Home } from './Home';
+import { Pricing } from './Pricing';
 import Login from './Login';
 import Signup from './Signup';
 import Navbar from './Navbar';
 import UserPage from './UserPage';
 import StoryBoard from './StoryBoard';
-import { sendAjax } from '../api/APIUtils';
 
 export interface IState {
-    csrf: string,
+    _csrf: string;
 }
 
 export class App extends React.Component<{}, IState> {
     state: IState = {
-        csrf: ''
+        _csrf: "",
     };
 
-    componentDidUpdate() {
-
+    componentDidMount() {
+        this.getToken();
     }
 
     private getToken = async (): Promise<any> => {
@@ -28,11 +28,12 @@ export class App extends React.Component<{}, IState> {
             const response = await axios({
                 method: 'get',
                 url: '/api/getToken',
-                responseType: 'text'
+                headers: {
+                    'Accept':'application/json'
+                }
             });
-
             
-            console.log(response);
+            this.setState({ _csrf: response.data.csrfToken })
         } catch (err) {
             console.log(err);
         }
@@ -46,19 +47,23 @@ export class App extends React.Component<{}, IState> {
                     <div>
                     <Route path="/" exact component={Home} />
                     <Route 
+                        path="/pricing"
+                        component={Pricing}
+                    />
+                    <Route 
                         path="/login" 
-                        render={props => <Login {...props} getToken={this.getToken} />} 
+                        render={props => <Login {...props} _csrf={this.state._csrf} />} 
                     />
                     <Route 
                         path="/signup" 
-                        render={props => <Signup {...props} getToken={this.getToken} />} 
+                        render={props => <Signup {...props} _csrf={this.state._csrf} />} 
                     />
                     <Route
-                        path="/user"
+                        path="/home"
                         component={UserPage}
                     />
                     <Route
-                        path="/storyboard"
+                        exact path="/storyboard"
                         component={StoryBoard}
                     />
                     </div>

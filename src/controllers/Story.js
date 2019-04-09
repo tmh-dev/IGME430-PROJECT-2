@@ -27,25 +27,46 @@ const makeStory = (req, res) => {
 
     return res.status(400).json({ error: 'An error occurred' });
   });
-
+  console.dir("success");
   return storyPromise;
 };
 
 const getStories = (request, response) => {
   const req = request;
   const res = response;
+  console.dir(req.session.account._id);
 
   return Story.StoryModel.findByOwner(req.session.account._id, (err, docs) => {
     if (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occurred' });
     }
+    
 
     return res.json({ stories: docs });
+  });
+};
+
+const deleteStory = (request, response) => {
+  const req = request;
+  const res = response;
+
+  if (!req.body.title) {
+    return res.status(400).json({ error: 'A title is required for deletion.' });
+  }
+
+  return Story.StoryModel.deleteByTitle(req.session.account._id, req.body.title, (err, doc) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occurred' });
+    }
+
+    return res.json({ story: doc, message: `Story with title ${doc.name} was successfully deleted.` });
   });
 };
 
 module.exports = {
   makeStory,
   getStories,
+  deleteStory
 };

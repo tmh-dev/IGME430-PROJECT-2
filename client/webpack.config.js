@@ -52,7 +52,7 @@ module.exports = {
     devServer: {
         historyApiFallback: true,
         proxy: {
-            "/api": "http://localhost:8080"
+            "/api": "https://localhost:8080"
         }
     },
     plugins: [

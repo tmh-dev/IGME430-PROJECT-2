@@ -4,42 +4,19 @@ import { stringify } from 'query-string';
 import { Route, Redirect } from 'react-router-dom';
 
 export interface IProps {
-    getToken: any;
+    _csrf: string;
 }
 
 export interface IState {
     email: string;
     password: string;
-    token: string;
-    _csrf: string;
 }
 
 export default class Login extends React.Component<IProps, IState> {
     state: IState = {
         email: '',
         password: '',
-        token: '',
-        _csrf: '',
     };
-
-    componentDidMount() {
-        this.getToken();
-    }
-
-    private getToken = async (): Promise<any> => {
-        try {
-            const response = await axios({
-                method: 'get',
-                url: '/api/getToken',
-                responseType: 'text'
-            });
-
-            
-            console.log(response);
-        } catch (err) {
-            console.log(err);
-        }
-    }
 
     private handleOnChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         switch (e.target.getAttribute('id')) {
@@ -52,10 +29,10 @@ export default class Login extends React.Component<IProps, IState> {
         }
     }
 
-    // TODO: Add coniditional rendering
     private handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<any> => {
         e.preventDefault();
         const { email, password } = this.state;
+        const { _csrf } = this.props;
         
         if (!email || !password) {
             console.log("All fields are required");
@@ -63,8 +40,9 @@ export default class Login extends React.Component<IProps, IState> {
 
         const data = {
             email,
-            password
-        }
+            password,
+            _csrf,
+        };
 
         try {
             const response = await axios({
@@ -75,15 +53,18 @@ export default class Login extends React.Component<IProps, IState> {
                     'Content-Type':'application/x-www-form-urlencoded;charset=utf-8'
                 },
             });
-            console.log(response)
-            const redirectPath = response.data.redirect;
+            console.log(response);
         } catch (err) {
             console.log(err);
         }
     }
 
+    renderRedirect = () => {
+        return <Redirect to="/home" />
+    }
+
     public render() {
-        const { getToken } = this.props;
+        const { _csrf } = this.props;
         const { email, password } = this.state;
 
         return (
@@ -100,7 +81,7 @@ export default class Login extends React.Component<IProps, IState> {
                         <input type="password" className="form-control" id="inputPassword" placeholder="Password" 
                         onChange={ this.handleOnChange } value={ password } />
                     </div>
-                    <input type="hidden" name="_csrf" value={"this.state.token"}/>
+                    <input type="hidden" name="_csrf" value={ _csrf }/>
                     <button type="submit" className="btn btn-primary">Submit</button>
                 </form>
             </div>
