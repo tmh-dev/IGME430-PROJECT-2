@@ -2,12 +2,17 @@ import * as React from "react";
 import axios from "axios";
 import { stringify } from "query-string";
 
+export interface IProps {
+    getStories: any;
+    _csrf: string;
+}
+
 export interface IState {
     title: string;
     description: string;
 }
 
-export default class StoryForm extends React.Component<{}, IState> {
+export default class StoryForm extends React.Component<IProps, IState> {
     state: IState = {
         title: "",
         description: "",
@@ -28,6 +33,7 @@ export default class StoryForm extends React.Component<{}, IState> {
     private handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<any> => {
         e.preventDefault();
         const { title, description } = this.state;
+        const { _csrf } = this.props;
 
         if (!title || !description) {
             console.log("All fields are required");
@@ -35,7 +41,9 @@ export default class StoryForm extends React.Component<{}, IState> {
 
         const data = {
             title,
-            description
+            description,
+            status: "Ice Box",
+            _csrf,
         };
 
         try {
@@ -51,6 +59,9 @@ export default class StoryForm extends React.Component<{}, IState> {
         } catch (err) {
             console.log(err);
         }
+
+        // rerender parent component
+        this.props.getStories();
     }
 
     render() {

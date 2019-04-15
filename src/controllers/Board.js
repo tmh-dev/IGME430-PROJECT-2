@@ -3,12 +3,12 @@ const models = require('../models');
 const { Board } = models;
 
 const makeBoard = (req, res) => {
-  if (!req.body.name) {
+  if (!req.body.title) {
     return res.status(400).json({ error: 'All fields are required.' });
   }
 
   const boardData = {
-    id: req.body.name,
+    id: req.body.title,
     owner: req.session.account._id,
   };
 
@@ -16,7 +16,7 @@ const makeBoard = (req, res) => {
 
   const boardPromise = newBoard.save();
 
-  boardPromise.then(() => res.json({ redirect: '/board' }));
+  boardPromise.then(() => res.json({ redirect: '/storyboard' }));
 
   boardPromise.catch((err) => {
     console.log(err);
@@ -44,7 +44,26 @@ const getBoards = (request, response) => {
   });
 };
 
+const deleteBoard = (request, response) => {
+  const req = request;
+  const res = response;
+
+  if (!req.body.title) {
+    return res.status(400).json({ error: 'A title is required for deletion.' });
+  }
+
+  return Board.BoardModel.deleteById(req.session.account._id, req.body.title, (err, doc) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occurred' });
+    }
+
+    return res.json({ board: doc, message: `Board with title ${doc.name} was successfully deleted.` });
+  });
+};
+
 module.exports = {
   makeBoard,
   getBoards,
+  deleteBoard,
 };

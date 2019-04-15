@@ -17,7 +17,7 @@ const BoardCard: React.FunctionComponent<IProps> = (props) => {
                 <div className="card-body">
                     <h5 className="card-title">{title}</h5>
                     <p className="card-text">{text}</p>
-                    <Link className="btn btn-primary" to="/board">Open</Link>
+                    <Link className="btn btn-primary" to="/storyboard">Open</Link>
                 </div>
             </div>
         </div>

@@ -85,13 +85,49 @@ const signup = (request, response) => {
   });
 };
 
+const changePassword = (request, response) => {
+  const req = request;
+  const res = response;
+
+  req.body.pass1 = `${req.body.pass1}`;
+  req.body.pass2 = `${req.body.pass2}`;
+
+
+  if (!req.body.pass1 || !req.body.pass2) {
+    return res.status(400).json({
+      error: 'All fields are required.',
+    });
+  }
+
+  if (req.body.pass1.trim() !== req.body.pass2.trim()) {
+    return res.status(400).json({
+      error: 'Passwords do not match.',
+    });
+  }
+
+  return Account.AccountModel.generateHash(req.body.pass1, async (salt, hash) => {
+    const update = {
+      password: hash,
+      salt,
+    };
+
+    Account.AccountModel.changePassword(req.session.account.email, update, (err, doc) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).json({ error: 'An error occured' });
+      }
+
+      return res.json({ message: `Password was updated for account with email ${doc.email}` });
+    });
+  });
+};
+
 const getToken = (request, response) => {
   const req = request;
   const res = response;
 
   const csrfJSON = {
     csrfToken: req.csrfToken(),
-    // csrfToken: 'test',
   };
 
   res.json(csrfJSON);
@@ -102,4 +138,5 @@ module.exports = {
   logout,
   signup,
   getToken,
+  changePassword,
 };

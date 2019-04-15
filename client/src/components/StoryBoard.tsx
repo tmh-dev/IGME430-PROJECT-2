@@ -1,17 +1,17 @@
 import * as React from "react";
 import axios from 'axios';
-//axios.defaults.baseURL = "http://localhost:8080";
-import { stringify } from "query-string";
 import StoryForm from "./StoryForm";
-//import BoardCategory from "./BoardCategory";
 import Story from './Story';
 
+export interface IProps {
+    _csrf: string;
+}
 
 export interface IState {
     stories: any[]
 }
 
-export default class StoryBoard extends React.Component<{}, IState> {
+export default class StoryBoard extends React.Component<IProps, IState> {
     state: IState = {
         stories: [],
     };
@@ -19,10 +19,6 @@ export default class StoryBoard extends React.Component<{}, IState> {
     componentDidMount() {
         this.getStories();
     }
-
-    // componentDidUpdate() {
-    //     this.getStories();
-    // }
 
     private getStories = async (): Promise<any> => {
         try {
@@ -37,37 +33,6 @@ export default class StoryBoard extends React.Component<{}, IState> {
         } catch (err) {
             console.log(err);
         }
-    }
-
-    private deleteStory = async (): Promise<any> => {
-        try {
-            const response = await axios.delete('/api/deleteStory');
-            console.log(response);
-        } catch (err) {
-            console.log(err);
-        }
-    }
-
-    private handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-    }
-
-    private handleDrop = (e: React.DragEvent) => {
-        let id = e.dataTransfer.getData("text");
-        console.log(id)
-    }
-
-    private displayStories = () => {
-        console.log('test');
-        const { stories } = this.state;
-        let jsxStories: any[] | JSX.Element[] = [];
-        console.log(stories.length);
-        stories.forEach(story => {
-            jsxStories.push(<Story title={story.title} status={"working"} description={story.description}/>);
-            console.log(story.title);
-        })
-
-        return jsxStories;
     }
 
     private createGroup = () => {
@@ -85,8 +50,8 @@ export default class StoryBoard extends React.Component<{}, IState> {
             let cols = [];
             // inner loop to create cols 
             for (let j: number = 0; stories.length > 0 && i < 4; j++) {
-                const { title, description } = stories.shift();
-                cols.push(<Story title={title} status="In Progress" description={description} />);
+                const { title, status, description } = stories.shift();
+                cols.push(<Story title={title} status={status} description={description} getStories={this.getStories} _csrf={this.props._csrf}/>);
             }
             // create row and add cols
             group.push(<div className="row">{ cols }</div>);
@@ -96,8 +61,7 @@ export default class StoryBoard extends React.Component<{}, IState> {
     }
 
     public render() {
-        const { stories } = this.state;
-
+        const { _csrf } = this.props;
         return (
             <div className="container">
                 <div className="row">
@@ -107,7 +71,11 @@ export default class StoryBoard extends React.Component<{}, IState> {
                     <BoardCategory title="TESTING" handleDragOver={this.handleDragOver} handleDrop={this.handleDrop}/>
                     <BoardCategory title="COMPLETE" handleDragOver={this.handleDragOver} handleDrop={this.handleDrop}/> */}
                 </div>
-                <StoryForm />
+
+                <div className="row">
+                    <StoryForm _csrf={ _csrf } getStories={this.getStories}/>
+                </div>
+
                 {this.createGroup()}
             </div>
         );

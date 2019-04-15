@@ -5,7 +5,6 @@ const Story = require('./Story');
 const { Schema } = mongoose;
 mongoose.Promise = global.Promise;
 
-
 let BoardModel = {};
 
 // mongoose.Types.ObjectId is a function that
@@ -22,25 +21,7 @@ const BoardSchema = new Schema({
     set: setName,
   },
 
-  iceBox: {
-    type: [Story.StorySchema],
-  },
-
-  emergency: {
-    type: [Story.StorySchema],
-  },
-
-  inProgress: {
-    type: [Story.StorySchema],
-  },
-
-  testing: {
-    type: [Story.StorySchema],
-  },
-
-  complete: {
-    type: [Story.StorySchema],
-  },
+  cards: [Story.StorySchema],
 
   owner: {
     type: mongoose.Schema.ObjectId,
@@ -56,11 +37,7 @@ const BoardSchema = new Schema({
 
 BoardSchema.statics.toAPI = doc => ({
   id: doc.id,
-  iceBox: doc.iceBox,
-  emergency: doc.emergency,
-  inProgress: doc.inProgress,
-  testing: doc.testing,
-  complete: doc.testing,
+  cards: doc.cards,
 });
 
 BoardSchema.statics.findByOwner = (ownerId, callback) => {
@@ -68,7 +45,16 @@ BoardSchema.statics.findByOwner = (ownerId, callback) => {
     owner: convertId(ownerId),
   };
 
-  return BoardModel.find(query).select('iceBox emergency inProgress testing complete').exec(callback);
+  return BoardModel.find(query).select('cards').exec(callback);
+};
+
+BoardSchema.statics.deleteById = (ownerId, boardId, callback) => {
+  const query = {
+    owner: convertId(ownerId),
+    boardId,
+  };
+
+  return BoardModel.deleteOne(query, callback);
 };
 
 BoardModel = mongoose.model('Board', BoardSchema);

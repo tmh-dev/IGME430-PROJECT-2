@@ -3,12 +3,13 @@ const models = require('../models');
 const { Story } = models;
 
 const makeStory = (req, res) => {
-  if (!req.body.title || !req.body.description) {
+  if (!req.body.title || !req.body.description || !req.body.status) {
     return res.status(400).json({ error: 'All fields are required.' });
   }
 
   const storyData = {
     title: req.body.title,
+    status: req.body.status,
     description: req.body.description,
     owner: req.session.account._id,
   };
@@ -17,7 +18,7 @@ const makeStory = (req, res) => {
 
   const storyPromise = newStory.save();
 
-  storyPromise.then(() => res.json({ redirect: '/board' }));
+  storyPromise.then(() => res.json({ redirect: '/storyboard' }));
 
   storyPromise.catch((err) => {
     console.log(err);
@@ -27,21 +28,19 @@ const makeStory = (req, res) => {
 
     return res.status(400).json({ error: 'An error occurred' });
   });
-  console.dir("success");
+
   return storyPromise;
 };
 
 const getStories = (request, response) => {
   const req = request;
   const res = response;
-  console.dir(req.session.account._id);
 
   return Story.StoryModel.findByOwner(req.session.account._id, (err, docs) => {
     if (err) {
       console.log(err);
       return res.status(400).json({ error: 'An error occurred' });
     }
-    
 
     return res.json({ stories: docs });
   });
@@ -68,5 +67,5 @@ const deleteStory = (request, response) => {
 module.exports = {
   makeStory,
   getStories,
-  deleteStory
+  deleteStory,
 };

@@ -59,31 +59,30 @@ export default class Login extends React.Component<IProps, IState> {
         }
     }
 
-    renderRedirect = () => {
-        return <Redirect to="/home" />
-    }
-
     public render() {
         const { _csrf } = this.props;
         const { email, password } = this.state;
 
         return (
             <div className="container">
-                <form onSubmit={ this.handleFormSubmit }>
-                    <h3 className="text-center">Login</h3>
-                    <div className="form-group">
-                        <label htmlFor="inputEmail">Email address</label>
-                        <input type="email" className="form-control" id="inputEmail" aria-describedby="emailHelp" 
-                        placeholder="Enter email" onChange={ this.handleOnChange } value={ email }/>          
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="inputPassword">Password</label>
-                        <input type="password" className="form-control" id="inputPassword" placeholder="Password" 
-                        onChange={ this.handleOnChange } value={ password } />
-                    </div>
-                    <input type="hidden" name="_csrf" value={ _csrf }/>
-                    <button type="submit" className="btn btn-primary">Submit</button>
-                </form>
+
+ 
+                    <form onSubmit={ this.handleFormSubmit }>
+                        <h3 className="text-center">Login</h3>
+                        <div className="form-group">
+                            <label htmlFor="inputEmail">Email address</label>
+                            <input type="email" className="form-control" id="inputEmail" aria-describedby="emailHelp" 
+                            placeholder="Enter email" onChange={ this.handleOnChange } value={ email }/>          
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="inputPassword">Password</label>
+                            <input type="password" className="form-control" id="inputPassword" placeholder="Password" 
+                            onChange={ this.handleOnChange } value={ password } />
+                        </div>
+                        <input type="hidden" name="_csrf" value={ _csrf }/>
+                        <button type="submit" className="btn btn-primary">Submit</button>
+                    </form>
+
             </div>
         );
     }

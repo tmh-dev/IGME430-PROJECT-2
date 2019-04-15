@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { Route, BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
+
 // import components
 import { Home } from './Home';
 import { Pricing } from './Pricing';
-import Login from './Login';
-import Signup from './Signup';
+import Login from './account/Login';
+import Signup from './account/Signup';
 import Navbar from './Navbar';
-import UserPage from './UserPage';
 import StoryBoard from './StoryBoard';
+import Settings from './Settings';
 
 export interface IState {
     _csrf: string;
@@ -23,6 +24,7 @@ export class App extends React.Component<{}, IState> {
         this.getToken();
     }
 
+    // grabs csrf protection token for all application's forms
     private getToken = async (): Promise<any> => {
         try {
             const response = await axios({
@@ -47,24 +49,24 @@ export class App extends React.Component<{}, IState> {
                     <div>
                     <Route path="/" exact component={Home} />
                     <Route 
-                        path="/pricing"
+                        exact path="/pricing"
                         component={Pricing}
                     />
                     <Route 
-                        path="/login" 
+                        exact path="/login" 
                         render={props => <Login {...props} _csrf={this.state._csrf} />} 
                     />
                     <Route 
-                        path="/signup" 
+                        exact path="/signup" 
                         render={props => <Signup {...props} _csrf={this.state._csrf} />} 
                     />
                     <Route
-                        path="/home"
-                        component={UserPage}
+                        exact path="/storyboard"
+                        render={props => <StoryBoard {...props} _csrf={this.state._csrf} />}
                     />
                     <Route
-                        exact path="/storyboard"
-                        component={StoryBoard}
+                        exact path="/settings"
+                        render={props => <Settings {...props} _csrf={this.state._csrf} />}
                     />
                     </div>
                 </Router>

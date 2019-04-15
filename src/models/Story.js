@@ -17,6 +17,11 @@ const StorySchema = new Schema({
     set: setName,
   },
 
+  status: {
+    type: String,
+    trim: true,
+  },
+
   description: {
     type: String,
   },
@@ -43,7 +48,7 @@ StorySchema.statics.findByOwner = (ownerId, callback) => {
     owner: convertId(ownerId),
   };
 
-  return StoryModel.find(query).select('title description').exec(callback);
+  return StoryModel.find(query).select('title status description').exec(callback);
 };
 
 StorySchema.statics.deleteByTitle = (ownerId, title, callback) => {
@@ -53,7 +58,7 @@ StorySchema.statics.deleteByTitle = (ownerId, title, callback) => {
   };
 
   return StoryModel.deleteOne(query, callback);
-}
+};
 
 StoryModel = mongoose.model('Story', StorySchema);
 
